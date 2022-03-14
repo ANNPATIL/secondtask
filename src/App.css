@@ -1,3 +1,13 @@
+
+.body {
+  background: #2e2806;
+  background-image: url("https://i.pinimg.com/originals/99/d3/15/99d3157be2bbf1d17c8589458a5b8896.jpg");
+  background-size: cover; 
+}
+
+
+
+
 .App {
   text-align: center;
 }
