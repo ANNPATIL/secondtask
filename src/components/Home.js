@@ -3,7 +3,6 @@ import axios from 'axios';
 import Account from '../components/account';
 import Blog from '../components/blog';
 import Category from '../components/category';
-import Allblogs from './allblogs';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,7 +20,7 @@ import NotesIcon from '@material-ui/icons/Notes';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { createBrowserHistory } from 'history';
 import { Container } from '@material-ui/core';
-
+import Allblogs from './allblogs';
 const drawerWidth = 240;
 const history = createBrowserHistory();
 const styles = (theme) => ({
@@ -64,7 +63,8 @@ class Home extends Component {
 	state = {
 		render: false,
 		cpage:false,
-		myblog: false
+		myblog: false,
+		categories:[]
 	};
 	
   logoutHandler = (event) => {
@@ -106,14 +106,32 @@ class Home extends Component {
 		};
 	}
 
+	getCategories = () => {
+		axios
+			.get('/blogs/categories')
+			.then((response) => {
+				console.log(response);
+				this.setState({
+					categories: response.data,
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+				this.setState({
+					categories:[],
+				});
+			});
+	}
+
 	componentDidMount = () => {
+    this.getCategories();
 		const authToken = localStorage.getItem('AuthToken');
     console.log("token:"+ authToken);
 	const headers = {
 		'Content-Type': 'application/json',
 		'Authorization': `${authToken}`
 	  }
-		
+		//axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
 			.get('/secured/claim',{headers:headers})
 			.then((response) => {
@@ -137,12 +155,13 @@ class Home extends Component {
 					phoneNumber: '',
 					uiLoading: false,
 				});
-				
+				//history.push('/login');
+				//window.location.reload();
 			}
 			})
 			.catch((error) => {
 				console.log(error);
-				
+				//this.setState({ errorMsg: 'Error in retrieving the data' });
         history.push('/login');
 		window.location.reload();
 			});
@@ -153,21 +172,21 @@ class Home extends Component {
 	render() {
 		const { classes } = this.props;
 		if (this.state.uiLoading === true) {
-			// return (
-				// <div className={classes.root}>
-				// 	{this.state.uiLoading && <CircularProgress size={150} className={classes.uiProgess} />}
-				// </div>
-			// );
+			return (
+				<div className={classes.root}>
+					{this.state.uiLoading && <CircularProgress size={150} className={classes.uiProgess} />}
+				</div>
+			);
 		} else {
 			return (
 				<div style={{ 
-					backgroundImage: `url("https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8YmxvZyUyMGJhY2tncm91bmR8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60")`,
-					height: "100vh",
-					width: "100wh",
-					backgroundposition: "center",
-					backgroundrepeat: "no-repeat",
-					backgroundSize: "cover"
-				 }}>
+                    backgroundImage: `url("https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8YmxvZyUyMGJhY2tncm91bmR8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60")`,
+                    height: "100vh",
+                    width: "100wh",
+                    backgroundposition: "center",
+                    backgroundrepeat: "no-repeat",
+                    backgroundSize: "cover"
+                 }}>
 				<div className={classes.root}>
 					<CssBaseline />
 					<AppBar position="fixed" className={classes.appBar}>
@@ -232,11 +251,10 @@ class Home extends Component {
 							</ListItem>
 						</List>
 					</Drawer>
-          <div>{this.state.cpage ? <Category /> :this.state.render ? <Account /> : this.state.myblog? <Blog/>: <Allblogs/>}</div>
+          <div>{this.state.cpage ? <Category /> :this.state.render ? <Account /> : this.state.myblog? <Blog/>:<Allblogs/>}</div>
 				</div>
 				</div>
 			);
-			
 		}
 	}
 }

@@ -24,11 +24,24 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {PaginatedList} from 'react-paginated-list';
 
 const styles = (theme) => ({
 	content: {
 		flexGrow: 1,
 		padding: theme.spacing(3)
+	},
+	clist: {
+		listStyle: 'none',
+		display: 'flex',
+
+	},
+	cli:{
+      marginLeft:"5px",
+	},
+	button:{
+		backgroundColor: "blue",
+		color:'white',
 	},
 	appBar: {
 		position: 'relative'
@@ -181,7 +194,21 @@ class blog extends Component {
 			open: true
 		});
 	}
-
+	handleCatClick(data){
+		console.log(data);
+		let result = [];
+		let value = data.category.category;
+		console.log(value);
+		result = this.state.blogs.filter((data) => {
+			return data.category.category.search(value) != -1;
+			});
+			this.setState({
+				fblogs:result,
+				filtered: true,
+			}
+			);
+			
+	}
 	handleViewOpen(data) {
 		this.setState({
 			title: data.blog.title,
@@ -309,6 +336,14 @@ else{
 			return (
 				<main className={classes.content}>
 					<div className={classes.toolbar} />
+					<h4>My Blogs</h4>
+					<ul className={classes.clist}>
+					<li className={classes.cli}><Button key="call" className={classes.button} onClick={() => this.setState({ filtered:false, fblogs:[] })}>All</Button></li>
+						{this.state.categories.map((category,id) => (
+							<li className={classes.cli} key={category.category} onClick={() => this.handleCatClick({ category })}><Button key={id} className={classes.button}>{category.category}</Button></li>
+						))
+}
+					</ul>
 					<div style={{ marginTop: '5', marginBottom: '3%' }}>
 <label>Search:</label>
 <input type="text" onChange={(event) =>handleSearch(event)} />
@@ -334,8 +369,7 @@ else{
 									autoFocus
 									color="inherit"
 									onClick={handleSubmit}
-									className={classes.submitButton}
-								>
+									className={classes.submitButton}>
 									{this.state.buttonType === 'Edit' ? 'Save' : 'Submit'}
 								</Button>
 							</Toolbar>
@@ -400,12 +434,20 @@ else{
 						</form>
 					</Dialog>
 
-					<Grid container spacing={2}>
+					
 	
 						{
+
 							this.state.filtered?
-						this.state.fblogs.map((blog,id) => (
-							<Grid item xs={12} sm={6} key={id}>
+							<PaginatedList
+    list={this.state.fblogs}
+    itemsPerPage={5}
+    renderList={(list) => (
+	  <Grid container spacing={2}>
+        {list.map((blog, id) => {
+          
+          return (
+            <Grid item xs={12} sm={6} key={id}>
 								<Card className={classes.root} variant="outlined">
 									<CardContent>
 										<Typography variant="h5" component="h2">
@@ -433,8 +475,22 @@ else{
 									</CardActions>
 								</Card>
 							</Grid>
-						)):this.state.blogs.map((blog,id) => (
-							<Grid item xs={12} sm={6} key={id}>
+          );
+        })}
+      </Grid>
+    )}
+  />
+						:
+						<PaginatedList
+    list={this.state.blogs}
+    itemsPerPage={5}
+    renderList={(list) => (
+      
+		<Grid container spacing={2}>
+        {list.map((blog, id) => {
+          //console.log(item);
+          return (
+            <Grid item xs={12} sm={6} key={id}>
 								<Card className={classes.root} variant="outlined">
 									<CardContent>
 										<Typography variant="h5" component="h2">
@@ -462,8 +518,14 @@ else{
 									</CardActions>
 								</Card>
 							</Grid>
-						))}
-					</Grid>
+          );
+        })}
+		</Grid>
+      
+    )}
+  />
+						}
+
 
 					<Dialog
 						onClose={handleViewClose}

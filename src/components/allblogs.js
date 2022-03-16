@@ -24,11 +24,24 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {PaginatedList} from 'react-paginated-list';
 
 const styles = (theme) => ({
 	content: {
 		flexGrow: 1,
 		padding: theme.spacing(3)
+	},
+	clist: {
+		listStyle: 'none',
+		display: 'flex',
+
+	},
+	cli:{
+      marginLeft:"5px",
+	},
+	button:{
+		backgroundColor: "blue",
+		color:'white',
 	},
 	appBar: {
 		position: 'relative'
@@ -55,6 +68,7 @@ const styles = (theme) => ({
 		marginLeft: 13,
 		marginTop: theme.spacing(3)
 	},
+
 	toolbar: theme.mixins.toolbar,
 	root: {
 		minWidth: 470
@@ -124,7 +138,7 @@ class allblogs extends Component {
 			[event.target.name]: event.target.value
 		});
 	};
-
+	
 	componentDidMount = () => {
 		const authToken = localStorage.getItem('AuthToken');
 		const headers = {
@@ -181,7 +195,22 @@ class allblogs extends Component {
 			open: true
 		});
 	}
-
+	
+	handleCatClick(data){
+		console.log(data);
+		let result = [];
+		let value = data.category.category;
+		console.log(value);
+		result = this.state.blogs.filter((data) => {
+			return data.category.category.search(value) != -1;
+			});
+			this.setState({
+				fblogs:result,
+				filtered: true,
+			}
+			);
+			
+	}
 	handleViewOpen(data) {
 		this.setState({
 			title: data.blog.title,
@@ -289,11 +318,11 @@ else{
 					console.log(error);
 				});
 		};
-
+		
 		const handleViewClose = () => {
 			this.setState({ viewOpen: false });
 		};
-
+		
 		const handleClose = (event) => {
 			this.setState({ open: false });
 		};
@@ -309,6 +338,14 @@ else{
 			return (
 				<main className={classes.content}>
 					<div className={classes.toolbar} />
+					<h4>Other Blogs</h4>
+					<ul className={classes.clist}>
+					<li className={classes.cli}><Button key="call" className={classes.button} onClick={() => this.setState({ filtered:false, fblogs:[] })}>All</Button></li>
+						{this.state.categories.map((category,id) => (
+							<li className={classes.cli} key={category.category} onClick={() => this.handleCatClick({ category })}><Button key={id} className={classes.button}>{category.category}</Button></li>
+						))
+}
+					</ul>
 					<div style={{ marginTop: '5', marginBottom: '3%' }}>
 <label>Search:</label>
 <input type="text" onChange={(event) =>handleSearch(event)} />
@@ -367,10 +404,10 @@ else{
 										variant="outlined"
 										required
 										fullWidth
-										id="todoTitle"
-										label="Todo Title"
+										id="blogTitle"
+										label="Blog Title"
 										name="title"
-										autoComplete="todoTitle"
+										autoComplete="blogTitle"
 										helperText={errors.title}
 										value={this.state.title}
 										error={errors.title ? true : false}

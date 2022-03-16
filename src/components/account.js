@@ -65,7 +65,7 @@ class account extends Component {
 			firstName: '',
 			lastName: '',
 			email: '',
-			phoneNumber: '',
+			
 			uiLoading: true,
 			buttonLoading: false,
 		};
@@ -87,7 +87,7 @@ class account extends Component {
 						firstName: response.data.firstName,
 						lastName: response.data.lastName,
 						email: response.data.email,
-						phoneNumber: response.phone,
+						
 						uiLoading: false,
 					});
 				}
@@ -96,7 +96,7 @@ class account extends Component {
 						firstName: '',
 						lastName: '',
 						email: '',
-						phoneNumber: '',
+						
 						uiLoading: false,
 					});
 					history.push('/login');
@@ -224,8 +224,8 @@ class account extends Component {
 											value={this.state.phoneNumber}
 											onChange={this.handleChange}
 										/>
-									</Grid> */}
-									
+									</Grid>
+									 */}
 								</Grid>
 							</CardContent>
 							<Divider />

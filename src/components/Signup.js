@@ -25,7 +25,7 @@ const styles = (theme) => ({
 		backgroundColor: theme.palette.secondary.main
 	},
 	form: {
-		width: '100%', // Fix IE 11 issue.
+		width: '100%', 
 		marginTop: theme.spacing(3)
 	},
 	submit: {
@@ -81,6 +81,7 @@ class Signup extends Component {
 			.post('/users/signup', newUserData)
 			.then((response) => {
 				console.log(response);
+				
 				this.setState({ 
 					loading: false,
 				});	
@@ -108,6 +109,8 @@ class Signup extends Component {
                 backgroundrepeat: "no-repeat",
                 backgroundSize: "cover"
              }}>
+
+
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
 				<div className={classes.paper}>
